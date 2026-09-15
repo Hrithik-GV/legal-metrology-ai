@@ -1,0 +1,53 @@
+{
+  "statute": "Legal Metrology (Packaged Commodities) Rules, 2011",
+  "rules": [
+    {
+      "rule_id": "RULE_6_1_E",
+      "rule_name": "Maximum Retail Price (MRP)",
+      "mandatory": true,
+      "field_key": "mrp",
+      "description": "Retail sale price inclusive of all taxes must be clearly declared.",
+      "pattern_check": true
+    },
+    {
+      "rule_id": "RULE_6_1_C",
+      "rule_name": "Net Quantity",
+      "mandatory": true,
+      "field_key": "net_quantity",
+      "description": "Net quantity in terms of standard unit of weight, measure or number must be stated.",
+      "pattern_check": true
+    },
+    {
+      "rule_id": "RULE_6_1_D",
+      "rule_name": "Month and Year of Manufacture / Packing",
+      "mandatory": true,
+      "field_key": "manufacturing_date",
+      "description": "The month and year in which the commodity is manufactured or pre-packed.",
+      "pattern_check": true
+    },
+    {
+      "rule_id": "RULE_6_1_A",
+      "rule_name": "Manufacturer / Packer Details",
+      "mandatory": true,
+      "field_key": "manufacturer_name",
+      "description": "Name and complete address of the manufacturer or packer or importer.",
+      "pattern_check": false
+    },
+    {
+      "rule_id": "RULE_6_1_N",
+      "rule_name": "Consumer Care Details",
+      "mandatory": true,
+      "field_key": "consumer_care",
+      "description": "Name, address, telephone number, or e-mail address of the person/office for consumer complaints.",
+      "pattern_check": true
+    },
+    {
+      "rule_id": "RULE_6_10",
+      "rule_name": "Country of Origin",
+      "mandatory": false,
+      "field_key": "country_of_origin",
+      "description": "Declaration of country of origin or manufacture for pre-packaged commodities.",
+      "pattern_check": false
+    }
+  ]
+}

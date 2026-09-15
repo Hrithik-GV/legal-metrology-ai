@@ -1,0 +1,35 @@
+# Python virtual environment
+.venv/
+venv/
+ENV/
+env/
+
+# Python cache & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Model weights
+models/*.pt
+models/*.onnx
+models/*.engine
+models/*.bin
+!models/.gitkeep
+
+# Output artifacts and reports
+outputs/*
+!outputs/.gitkeep
+test_images/*
+!test_images/.gitkeep
+
+# IDE and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
