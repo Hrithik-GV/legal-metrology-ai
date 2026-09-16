@@ -359,6 +359,7 @@ def extract_text(
     image_path: Union[str, Path, np.ndarray],
     output_dir: Optional[Union[str, Path]] = None,
     force_fallback: bool = False,
+    image_stem: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Main entrypoint function for the OCR module.
@@ -368,22 +369,6 @@ def extract_text(
     3. Extracts text, confidence, bounding boxes
     4. Saves annotated image showing bounding boxes to outputs/ocr/
     5. Returns structured JSON-compatible dictionary
-
-    Return format:
-    {
-        "status": "success",
-        "engine": "paddleocr" or "fallback",
-        "image_path": str,
-        "annotated_image_path": str,
-        "count": int,
-        "results": [
-            {
-                "text": "...",
-                "confidence": 0.95,
-                "bounding_box": [...]
-            }, ...
-        ]
-    }
     """
     # 1. Load image
     if isinstance(image_path, (str, Path)):
@@ -392,11 +377,11 @@ def extract_text(
             raise FileNotFoundError(f"Image not found at path: {img_p}")
         file_bytes = np.fromfile(str(img_p), dtype=np.uint8)
         image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
-        stem = img_p.stem
+        stem = image_stem or img_p.stem
         src_path_str = str(img_p)
     elif isinstance(image_path, np.ndarray):
         image = image_path
-        stem = "image_input"
+        stem = image_stem or "image_input"
         src_path_str = "numpy_array"
     else:
         raise ValueError(f"Unsupported image input type: {type(image_path)}")
