@@ -43,6 +43,7 @@ from app.preprocessing.image_processor import preprocess_image, PreprocessResult
 from app.detection.yolo_detector import YOLODetector, detect_regions
 from app.ocr.paddle_ocr import extract_text
 from app.extraction.declaration_extractor import extract_declarations
+from app.rules.rule_engine import RuleEngine
 
 
 def get_box_center_and_bounds(box: List[Any]) -> Tuple[float, float, float, float, float, float]:
@@ -244,6 +245,7 @@ class VisionPipeline:
     ):
         self.output_base_dir = Path(output_base_dir or PROJECT_ROOT / "outputs")
         self.yolo_detector = YOLODetector(model_path=yolo_model_path)
+        self.rule_engine = RuleEngine()
 
     def process(
         self,
@@ -256,7 +258,8 @@ class VisionPipeline:
         2. Detects packaging regions with YOLOv8
         3. Extracts text and bounding boxes with PaddleOCR
         4. Associates OCR tokens with detected regions
-        5. Saves final annotated visualization
+        5. Evaluates Legal Metrology rules
+        6. Saves final annotated visualization
         """
         input_path = Path(image_path).resolve()
         if not input_path.exists():
@@ -294,10 +297,13 @@ class VisionPipeline:
         # Step 4: Associate OCR text with detected YOLO regions
         associated_regions = associate_ocr_with_regions(detections, ocr_results)
 
-        # Step 5: Statutory Declarations (Bonus extracted declarations)
+        # Step 5: Statutory Declarations Extraction
         extracted_declarations = extract_declarations(ocr_results, image_id=stem)
 
-        # Step 6: Create Composite Final Annotated Image
+        # Step 6: Modular Rule Engine Assessment
+        rule_assessment = self.rule_engine.evaluate(extracted_declarations)
+
+        # Step 7: Create Composite Final Annotated Image
         final_dir = self.output_base_dir / "final"
         final_output_file = final_dir / f"{stem}_final.jpg"
         final_annotated_path = create_composite_annotated_image(
@@ -319,11 +325,13 @@ class VisionPipeline:
             "ocr_results": ocr_results,
             "regions": associated_regions,
             "declarations": extracted_declarations,
+            "rule_assessment": rule_assessment,
             "summary": {
                 "total_detections": len(detections),
                 "total_ocr_tokens": len(ocr_results),
                 "total_associated_regions": len(associated_regions),
                 "declarations_found": len(extracted_declarations),
+                "compliance_score": rule_assessment.get("compliance_score", 0.0),
             },
         }
 
@@ -398,6 +406,16 @@ def main():
         print("\n--- Key Legal Metrology Declarations ---")
         for dec in result["declarations"]:
             print(f"  * {dec['field']:18}: {dec['value']} (conf: {dec['confidence']})")
+
+        rule_eval = result.get("rule_assessment", {})
+        print(f"\n--- {rule_eval.get('assessment', 'Assessment')} ---")
+        print(f"Prototype Compliance Score: {rule_eval.get('compliance_score', 0.0)} / 100.0")
+        print(f"Notice: {rule_eval.get('disclaimer', '')}")
+
+        print("\nRule Verification Breakdown:")
+        for r in rule_eval.get("rule_results", []):
+            status_icon = "✓" if r["status"] == "PASS" else ("!" if r["status"] == "WARNING" else "✗")
+            print(f"  [{status_icon}] {r['rule_id']} ({r['field']}): {r['status']} - {r['reason']}")
 
         print("\n" + "=" * 70)
         print("PIPELINE EXECUTION COMPLETED (STATUS: OK)")
